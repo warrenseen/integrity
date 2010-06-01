@@ -63,6 +63,18 @@ module Integrity
       @project = Project.new
       show :new, :title => ["projects", "new project"]
     end
+    
+    get "/overview.json" do
+      login_required
+      @projects = Project.all
+      content_type "text/json"
+      body @projects.map { |p| {:name => p.name, :status => p.status, :build => 
+                            { :author => p.last_build.commit.author.name, :status => p.last_build.status, 
+                              :identifier => p.last_build.commit.identifier, :message => p.last_build.commit.message, 
+                              :committed_at => p.last_build.commit.committed_at }
+                              }
+                          }.to_json
+    end
 
     post "/?" do
       login_required
@@ -133,5 +145,6 @@ module Integrity
       current_build.destroy!
       redirect url
     end
+    
   end
 end
