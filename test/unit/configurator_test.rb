@@ -1,6 +1,8 @@
 require "helper"
 
 class ConfiguratorTest < IntegrityTest
+  setup { Integrity.auto_branch = false }
+
   test "builder" do
     Integrity.configure { |c| c.builder(:threaded, 1) }
     assert_respond_to Integrity.builder, :wait!
@@ -30,11 +32,17 @@ class ConfiguratorTest < IntegrityTest
       instance_variable_get(:@dev).path
   end
 
-  test "endpoints" do
+  test "github" do
     Integrity.configure { |c| c.github "HOLY_HUB" }
     assert_equal "HOLY_HUB", Integrity::App.github
+  end
 
-    Integrity.configure { |c| c.push "42" }
-    assert_equal "42", Integrity::App.push
+  test "auto_branch!" do
+    begin
+      Integrity.configure { |c| c.auto_branch! }
+      assert Integrity.auto_branch
+    ensure
+      Integrity.auto_branch = false
+    end
   end
 end

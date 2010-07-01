@@ -36,16 +36,16 @@ module Integrity
         end
     end
 
-    def push(token)
-      Integrity::App.set(:push, token)
-    end
-
     def github(token)
       Integrity::App.set(:github, token)
     end
 
     def build_all!
       Integrity.app.enable(:build_all)
+    end
+
+    def auto_branch!
+      Integrity.auto_branch = true
     end
 
     def user(v)

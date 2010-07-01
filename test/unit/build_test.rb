@@ -26,8 +26,9 @@ class BuildTest < IntegrityTest
     assert_match /^(.*?) is building$/,
       Build.gen(:building).human_status
 
-    assert_equal "This commit hasn't been built yet",
-      Build.gen(:pending).human_status
+    build = Build.gen(:pending)
+    assert_equal "#{build.commit.short_identifier} hasn't been built yet",
+      build.human_status
   end
 
   test "being destroyed" do

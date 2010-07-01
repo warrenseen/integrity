@@ -6,7 +6,7 @@ module Integrity
     include Notifiers
 
     property :id,         Serial
-    property :name,       String,   :required => true
+    property :name,       String,   :required => true, :unique => true
     property :permalink,  String
     property :uri,        URI,      :required => true, :length => 255
     property :branch,     String,   :required => true, :default => "master"
@@ -14,8 +14,6 @@ module Integrity
     property :public,     Boolean,  :default  => true
 
     timestamps :at
-
-    validates_is_unique :name
 
     default_scope(:default).update(:order => [:name.asc])
 
@@ -28,8 +26,42 @@ module Integrity
       builds.destroy!
     end
 
+    def build_head
+      BuildableProject.new(self, {"id" => "HEAD"}).build
+    end
+
     def build(commit)
-      BuildableProject.new(self, commit).build
+      buildable = BuildableProject.new(self, {
+        "id"        => commit.identifier,
+        "message"   => commit.message,
+        "timestamp" => commit.committed_at,
+        "author"    => commit.author
+      })
+      buildable.build
+    end
+
+    def fork(new_branch)
+      forked = Project.create(
+        :name    => "#{name} (#{new_branch})",
+        :uri     => uri,
+        :branch  => new_branch,
+        :command => command,
+        :public  => public?
+      )
+
+      notifiers.each { |notifier|
+        forked.notifiers.create(
+          :name    => notifier.name,
+          :enabled => notifier.enabled?,
+          :config  => notifier.config
+        )
+      }
+
+      forked
+    end
+
+    def github?
+      uri.to_s.include?("github.com")
     end
 
     # TODO lame, there is got to be a better way

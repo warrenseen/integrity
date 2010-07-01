@@ -10,6 +10,7 @@ require "dm-validations"
 require "dm-types"
 require "dm-timestamps"
 require "dm-aggregates"
+require "dm-migrations"
 
 require "yaml"
 require "logger"
@@ -18,12 +19,14 @@ require "timeout"
 require "ostruct"
 require "pathname"
 require "forwardable"
+require "bcat/ansi"
 
 require "integrity/core_ext/object"
 
 require "integrity/configurator"
 require "integrity/bootstrapper"
 require "integrity/project"
+require "integrity/project_finder"
 require "integrity/buildable_project"
 require "integrity/author"
 require "integrity/commit"
@@ -42,7 +45,7 @@ Addressable::URI.class_eval { def gsub(*a); to_s.gsub(*a); end }
 
 module Integrity
   class << self
-    attr_accessor :builder, :directory, :base_url, :logger
+    attr_accessor :builder, :directory, :base_url, :logger, :auto_branch
   end
 
   def self.configure(&block)

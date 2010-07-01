@@ -17,13 +17,6 @@ module Integrity
       show :error, :title => "something has gone terribly wrong"
     end
 
-    use Sass::Plugin::Rack
-
-    configure do |app|
-      Sass::Plugin.options[:css_location]      = app.public
-      Sass::Plugin.options[:template_location] = app.views
-    end
-
     before do
       halt 404 if request.path_info.include?("favico")
 
@@ -37,10 +30,10 @@ module Integrity
       end
     end
 
-    post "/:endpoint/:token" do |endpoint, token|
-      pass unless endpoint_enabled?
-      halt 403 unless token   == endpoint_token
-      halt 400 unless payload =  endpoint_payload
+    post "/github/:token" do |token|
+      pass     unless github_enabled?
+      halt 403 unless token   == github_token
+      halt 400 unless payload =  github_payload
 
       BuildableProject.call(payload).each { |b| b.build }.size.to_s
     end
@@ -121,20 +114,20 @@ module Integrity
     post "/:project/builds" do
       login_required
 
-      @build = current_project.build("HEAD")
+      @build = current_project.build_head
       redirect build_url(@build).to_s
     end
 
     get "/:project/builds/:build" do
       login_required unless current_project.public?
       show :build, :title => ["projects", current_project.permalink,
-        current_build.commit.identifier]
+        current_build.commit.short_identifier]
     end
 
     post "/:project/builds/:build" do
       login_required
 
-      @build = current_project.build(current_build.commit.identifier)
+      @build = current_project.build(current_build.commit)
       redirect build_url(@build).to_s
     end
 
