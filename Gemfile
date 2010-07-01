@@ -34,9 +34,9 @@ gem "bcat", "~>0.5"
 # gem "nap", :git => "git://github.com/qrush/nap.git"
 
 # = Dependencies for the :dj builder
-# gem "activerecord"
-# gem "sqlite3-ruby"
-# gem "delayed_job", :git => "git://github.com/tobi/delayed_job.git"
+gem "activerecord"
+gem "sqlite3-ruby", "1.2.5"
+gem "delayed_job", :git => "git://github.com/tobi/delayed_job.git"
 # = Dependency for the :resque builder
 # gem "resque"
 
@@ -47,7 +47,7 @@ gem "bcat", "~>0.5"
 # = Development dependencies.
 group :test do
   gem "ruby-debug" if RUBY_VERSION < '1.9'
-  gem "sqlite3-ruby"
+  gem "sqlite3-ruby", "1.2.5"
   gem "activerecord"
   gem "delayed_job", :git => "git://github.com/tobi/delayed_job.git"
   gem "rr"
