@@ -25,11 +25,11 @@ Daemons.run_proc('job_runner', daemon_options) do
   
   Dir.chdir dir
   
-  require "integrity"
+  require "lib/integrity"
   Integrity.configure do |c|
     c.builder      :dj, :adapter => "sqlite3", :database => "dj.db"
   end
   
-  require "integrity/builder/delayed"
+  require "lib/integrity/builder/delayed"
   Delayed::Worker.new.start
 end
