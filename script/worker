@@ -24,12 +24,13 @@ Daemons.run_proc('job_runner', daemon_options) do
   end
   
   Dir.chdir dir
+  $LOAD_PATH.unshift(File.join(dir, "lib"))
   
-  require "lib/integrity"
+  require "integrity"
   Integrity.configure do |c|
     c.builder      :dj, :adapter => "sqlite3", :database => "dj.db"
   end
   
-  require "lib/integrity/builder/delayed"
+  require "integrity/builder/delayed"
   Delayed::Worker.new.start
 end
