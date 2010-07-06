@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+require "rubygems"
+require "bundler"
+# Set up load paths for all bundled gems
+ENV["BUNDLE_GEMFILE"] = File.expand_path("../../Gemfile", __FILE__)
+Bundler.setup
+ 
+Bundler.require :default
+
+dir = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+
+daemon_options = {
+  :multiple   => false,
+  :dir_mode   => :normal,
+  :dir        => File.join(dir, 'tmp', 'pids'),
+  :backtrace  => true
+}
+
+Daemons.run_proc('job_runner', daemon_options) do
+  if ARGV.include?('--')
+    ARGV.slice! 0..ARGV.index('--')
+  else
+    ARGV.clear
+  end
+  
+  Dir.chdir dir
+  
+  require "integrity"
+  Integrity.configure do |c|
+    c.builder      :dj, :adapter => "sqlite3", :database => "dj.db"
+  end
+  
+  require "integrity/builder/delayed"
+  Delayed::Worker.new.start
+end

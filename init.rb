@@ -22,5 +22,5 @@ Integrity.configure do |c|
   c.log          "integrity.log"
   c.github       "SECRET"
   c.build_all!
-  c.builder      :threaded, 5
+  c.builder      :dj, :adapter => "sqlite3", :database => "dj.db"
 end

@@ -34,9 +34,10 @@ gem "bcat", "~>0.5"
 # gem "nap", :git => "git://github.com/qrush/nap.git"
 
 # = Dependencies for the :dj builder
-gem "activerecord"
 gem "sqlite3-ruby", "1.2.5"
+gem "activerecord"
 gem "delayed_job", :git => "git://github.com/tobi/delayed_job.git"
+gem "daemons"
 # = Dependency for the :resque builder
 # gem "resque"
 
